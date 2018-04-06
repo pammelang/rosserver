@@ -1,6 +1,6 @@
 var config = {
 	rosbridge_server: { 
-                ip: '10.12.167.34',
+                ip: '10.12.190.70',
                 port: 9090
         }, 
 	web_server: {

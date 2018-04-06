@@ -4,12 +4,14 @@ CTYPE html>
 <meta charset="utf-8" />
 <script src="https://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
 <script src="../build/roslib.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
 <script src="config.js"></script>
 
 <script>
   // Connecting to websocket server
-  var socket = io.connect(location.protocol + '//' + config.web_server.ip +
-          ":" + config.web_server.port)
+  var text = 'http:' + '//' + config.web_server.ip + ":" + config.web_server.port;
+  console.log(text);
+  var socket = io.connect(text)
   // Connecting to ROS
   // -----------------
   var ros = new ROSLIB.Ros();
@@ -37,6 +39,12 @@ CTYPE html>
   });
   // Create a connection to the rosbridge WebSocket server.
   ros.connect('ws://localhost:9090');
+  // Create a connection to the websocket server
+  socket.on('connect', function() {
+    console.log('Websocket connected!')
+    socket.emit('client_connection', namespace='/video', {data: 'ROS client is connected!'});
+  });
+
   // Publishing a Topic
   // ------------------
   // First, we create a Topic object with details of the topic's name and message type.
@@ -67,14 +75,16 @@ CTYPE html>
   // and message type. Note that we can call publish or subscribe on the same topic object.
   var listener = new ROSLIB.Topic({
     ros : ros,
-    name : '/chatter',
-    messageType : 'std_msgs/String'
+    name : '/camera/image_raw/compressed',
+    messageType : 'sensor_msgs/CompressedImage'
   });
   // Then we add a callback to be called every time a message is published on this topic.
   listener.subscribe(function(message) {
-    console.log('Received data from arduino: ' + listener.name + ': ' + message.data);
-    // If desired, we can unsubscribe from the topic as well.
-    listener.unsubscribe();
+    // console.log('Received image from: ' + listener.name + ': ' + message.data);
+    var imagedata = "data:image/jpg;base64," + message.data;
+    document.getElementById('video').setAttribute('src', imagedata);
+    socket.emit('streaming', namespace='/video', {data: message.data});
+    // listener.unsubscribe();
   });
   // Calling a service
   // -----------------
@@ -167,6 +177,8 @@ CTYPE html>
       Connection closed.
     </p>
   </div>
+  <img id="video"> 
+  </img>
 </body>
 </html>
 
