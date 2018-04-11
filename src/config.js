@@ -5,6 +5,6 @@ var config = {
         }, 
 	web_server: {
 		ip: '10.12.87.46', 
-		port: 5000
+		port: 3000
 	}
 }
