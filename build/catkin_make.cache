@@ -1,0 +1,2 @@
+
+-DCATKIN_DEVEL_PREFIX=/home/pamm/rosserver/devel -DCMAKE_INSTALL_PREFIX=/home/pamm/rosserver/install -G Unix Makefiles
