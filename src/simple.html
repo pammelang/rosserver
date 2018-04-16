@@ -10,7 +10,6 @@ CTYPE html>
 <script>
   // Connecting to websocket server
   var text = 'http:' + '//' + config.web_server.ip + ":" + config.web_server.port + "/video";
-  console.log(text);
   var socket = io.connect(text)
   // Connecting to ROS
   // -----------------
