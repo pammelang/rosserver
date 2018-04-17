@@ -9,7 +9,7 @@ var listener = new ROSLIB.Topic({
     messageType : 'sensor_msgs/CompressedImage'
 });
 
-const socket = io.connect("http://localhost:5000/video", { secure: true, reconnect: true });
+const socket = io.connect("http://10.12.87.46:3000/video", { secure: true, reconnect: true });
 socket.on('connect', function(){
     console.log('connected to server');
     socket.emit('connection', namespace='/video', {data: 'ROS client is connected!'});
