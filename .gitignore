@@ -1,0 +1,8 @@
+build/
+build_isolated/
+devel/
+devel_isolated/
+external_src/
+lib/
+src/
+node_modules/

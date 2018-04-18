@@ -4,10 +4,11 @@ var rpio = require('rpio');
 
 //// RPI GPIO SET UP 
 var pin1 = 12;           /* P12/GPIO18 */
-var pin2 = 13;
-var range = 1024;     
-var max = 512;          /*   the bottom 8th of a larger scale */
-var clockdiv = 8;       /* Clock divider (PWM refresh rate), 8 == 2.4MHz */
+var pin2 = 32;           /* P32/GPIO12 */
+var range = 2000;     
+var max = 200;          /*   the bottom 8th of a larger scale */
+var clockdiv = 128;       /* Clock divider (PWM refresh rate), 8 == 2.4MHz */
+rpio.init({gpiomem: false});
 rpio.open(pin1, rpio.PWM);
 rpio.open(pin2, rpio.PWM);
 rpio.pwmSetClockDivider(clockdiv);
@@ -51,6 +52,8 @@ socket.on('throttleright', function(){
     rpio.pwmSetData(pin1, 0);
     rpio.pwmSetData(pin2, max);
 });
-socket.on('disconnect', function(){
+socket.on('disconnect', function() {
+    rpio.open(pin1, rpio.INPUT);
+    rpio.open(pin2, rpio.INPUT);
     console.log('disconnected from server');
 });
