@@ -1,6 +1,20 @@
 const io = require("socket.io-client");
 const ROSLIB = require("roslib");
+var rpio = require('rpio');
 
+//// RPI GPIO SET UP 
+var pin1 = 12;           /* P12/GPIO18 */
+var pin2 = 13;
+var range = 1024;     
+var max = 512;          /*   the bottom 8th of a larger scale */
+var clockdiv = 8;       /* Clock divider (PWM refresh rate), 8 == 2.4MHz */
+rpio.open(pin1, rpio.PWM);
+rpio.open(pin2, rpio.PWM);
+rpio.pwmSetClockDivider(clockdiv);
+rpio.pwmSetRange(pin1, range); 
+rpio.pwmSetRange(pin2, range); 
+
+//// ROS SET UP
 var ros = new ROSLIB.Ros(); 
 ros.connect('ws://localhost:9090');
 var listener = new ROSLIB.Topic({
@@ -9,6 +23,7 @@ var listener = new ROSLIB.Topic({
     messageType : 'sensor_msgs/CompressedImage'
 });
 
+//// WEBSOCKET SET UP 
 const socket = io.connect("http://10.12.87.46:3000/video", { secure: true, reconnect: true });
 socket.on('connect', function(){
     console.log('connected to server');
@@ -19,7 +34,22 @@ socket.on('connect', function(){
         socket.emit('streaming', namespace='/video', {data: message.data});
         // listener.unsubscribe();
       });
+});
+socket.on('throttleup', function() {
+    console.log('moving foward');
+    rpio.pwmSetData(pin1, max);
+    rpio.pwmSetData(pin2, max); 
+});
 
+socket.on('throttleleft', function(){
+    console.log('moving left');
+    rpio.pwmSetData(pin1, max);
+    rpio.pwmSetData(pin2, 0);
+});
+socket.on('throttleright', function(){
+    console.log('moving right');
+    rpio.pwmSetData(pin1, 0);
+    rpio.pwmSetData(pin2, max);
 });
 socket.on('disconnect', function(){
     console.log('disconnected from server');

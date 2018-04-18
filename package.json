@@ -18,6 +18,7 @@
   "homepage": "https://github.com/pammelang/rosserver#readme",
   "dependencies": {
     "roslib": "^0.20.0",
+    "rpio": "^0.9.21",
     "socket.io-client": "^2.1.0"
   }
 }
